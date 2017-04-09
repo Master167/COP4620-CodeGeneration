@@ -17,6 +17,9 @@
 #include "SymbolTable.h"
 #include "Symbol.h"
 
+#define INT_TO_STRING( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
+
 class Parser {
 public:
     Parser(std::fstream& inputFile);
@@ -36,6 +39,12 @@ private:
     std::string lastType;
     int numberOfParamSeen;
     bool seenReturnStmt;
+    
+    // Added for Project Four
+    int currentOutputLine;
+    int tempVariableCount;
+    std::string** output;
+    
     // Class Methods
     bool getNextToken();
     bool acceptToken(std::string token, bool addSymbol);
@@ -43,6 +52,9 @@ private:
     void throwException() throw (int);
     void throwFloatException() throw(float);
     bool searchArray(int arraySize, std::string *array, std::string key);
+    
+    // Added for project 4
+    void printOutput();
     
     // Grammar Methods
     void program();

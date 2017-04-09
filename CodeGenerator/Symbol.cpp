@@ -25,7 +25,7 @@ Symbol::Symbol(std::string identifier, std::string scope) {
     this->value = "";
     this->isFunction = false;
     this->isArray = false;
-    this->numberOfParams = -1;
+    this->numberOfParams = 0;
     this->nextSymbol = NULL;
 }
 

@@ -39,10 +39,10 @@ int main(int argc, char** argv) {
                     tempFilestream.seekg(0, std::ios::beg);
                     
                     if (continueCompile) {
-                        std::cout << "ACCEPT" << std::endl;
+                        //std::cout << "ACCEPT" << std::endl;
                     }
                     else {
-                        std::cout << "REJECT" << std::endl;
+                        //std::cout << "REJECT" << std::endl;
                     }
                     
                     tempFilestream.close();

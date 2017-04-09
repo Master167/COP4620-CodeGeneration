@@ -27,12 +27,12 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" testfile1</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" testfile3</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" testfile2</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" testfile1</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" testfile2</runcommand>
-        <rundir>D:\GitHub\COP4620-Semantic-Checker</rundir>
+        <runcommand>"${OUTPUT_PATH}" testfile1</runcommand>
+        <rundir>D:\GitHub\COP4620-GodeGeneration</rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>

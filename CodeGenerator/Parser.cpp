@@ -35,7 +35,6 @@ bool Parser::parseFile(SymbolTable* symTable) {
                 // last function seen was not main
                 result = false;
             }
-            this->printOutput();
         }
         catch (int e) {
             std::cout << "Int Exception thrown" << std::endl;
@@ -51,6 +50,7 @@ bool Parser::parseFile(SymbolTable* symTable) {
             std::cout << e << std::endl;
             result = false;
         }
+        this->printOutput();
     }
     else {
         std::cout << "Unable to pull first token" << std::endl;
@@ -129,11 +129,15 @@ bool Parser::acceptToken(std::string token, bool addSymbol) {
                 result = false;
             }
             else {
+                keyword = this->currentToken.erase(findResult, 5);
+                this->lastNumberConstant = atoi(keyword.c_str());
                 result = this->getNextToken();
                 this->lastType = "int";
             }
         }
         else {
+            keyword = this->currentToken.erase(findResult, 7);
+            this->lastNumberConstant = atoi(keyword.c_str());
             result = this->getNextToken();
             this->lastType = "float";
         }
@@ -186,7 +190,7 @@ void Parser::throwException() throw (int) {
 }
 
 void Parser::throwFloatException() throw(float){
-    // Ignoring this becuase the Semantic checks are not 100%
+    // Ignoring this because the Semantic checks are not 100%
     // and the professor has promised that all test files are
     // semantically correct
     //throw (float)-1.0;
@@ -321,8 +325,15 @@ void Parser::callDeclaration() {
 }
 
 void Parser::idSpecifier() {
+    int number;
     if (this->currentToken.compare(";") == 0) {
         this->acceptToken(";", false);
+        
+        this->output[this->currentOutputLine][0] = "alloc";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
     }
     else if (this->currentToken.compare("[") == 0) {
         this->acceptToken("[", false);
@@ -330,6 +341,13 @@ void Parser::idSpecifier() {
         this->acceptToken("]", false);
         this->lastSymbol->changeIsArray();
         this->acceptToken(";", false);
+        
+        number = this->lastNumberConstant * 4;
+        this->output[this->currentOutputLine][0] = "alloc";
+        this->output[this->currentOutputLine][1] = INT_TO_STRING(number);
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
     }
     else {
         this->throwException();

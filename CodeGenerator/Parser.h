@@ -14,6 +14,7 @@
 #include <new>
 #include <cctype>
 #include <sstream>
+#include <cstdlib>
 #include "SymbolTable.h"
 #include "Symbol.h"
 
@@ -43,6 +44,7 @@ private:
     // Added for Project Four
     int currentOutputLine;
     int tempVariableCount;
+    int lastNumberConstant;
     std::string** output;
     
     // Class Methods

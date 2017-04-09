@@ -1,0 +1,49 @@
+/**
+NOTE: For use here, all non-terminals lower case
+
+Left-Recursion Fix:
+A	-> Aa | b		=>	A	-> bA'
+						A'	-> aA' | empty
+*/
+
+program 					->	declaration-list
+declaration-list			->	declaration declaration-list-prime
+declaration-list-prime		->	declaration declaration-list-prime | empty
+declaration					->	type-specifier ID call-declaration
+call-declaration			->	id-specifier | ( params ) compound-stmt
+id-specifier				->	; | [ NUM ] ;
+type-specifier				->	INT | FLOAT | VOID
+params						->	INT ID array param-list-prime | FLOAT ID array param-list-prime | VOID param-list
+param-list					->	ID array param-list-prime | empty // I decided to keep the name because naming things is hard.
+param-list-prime			->	, param param-list-prime | empty
+param						->	type-specifier ID array
+array						->	[ ] | empty
+compound-stmt				->	{ local-declarations statement-list }
+local-declarations			->	local-declaration-prime
+local-declaration-prime		->	type-specifier ID id-specifier local-declaration-prime | empty
+statement-list				->	statement-list-prime
+statement-list-prime		->	statement statement-list-prime | empty
+statement					->	expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
+expression-stmt				->	expression ; | ;
+selection-stmt				->	IF ( expression ) statement dangling-else
+dangling-else				->	ELSE statement | empty
+iteration-stmt				->	WHILE ( expression ) statement
+return-stmt					->	RETURN return-stmt-end
+return-stmt-end				->	; | expression ;
+expression					->	ID variable | ( expression ) term-prime additive-expression-prime relop-expression | NUM term-prime additive-expression-prime relop-expression
+variable					->	var-array variable-factor | ( args ) term-prime additive-expression-prime relop-expression
+variable-factor				->	= expression |  term-prime additive-expression-prime relop-expression
+var-array					->	[ expression ] | empty
+relop-expression			->	relop additive-expression | empty
+relop						->	<= | < | > | >= | == | !=
+additive-expression 		->	( expression ) term-prime additive-expression-prime | ID var-call term-prime additive-expression-prime | NUM term-prime additive-expression-prime
+additive-expression-prime	->	addop term additive-expression-prime | empty
+addop						->	+ | -
+term						->	( expression ) term-prime | ID var-call term-prime | NUM term-prime
+term-prime					->	mulop factor term-prime | empty
+factor						->	( expression ) | ID var-call | NUM
+mulop						->	* | /
+var-call					->	( args ) | var-array
+args						->	arg-list | empty
+arg-list					->	expression arg-list-prime
+arg-list-prime				->	, expression arg-list-prime | empty

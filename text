@@ -1,0 +1,48 @@
+Project 4 Compiler
+COP 4620/5625
+CONSTRUCTION OF LANGUAGE TRANSLATORS
+Dr. Roger Eggen
+Due: 3/30/17
+
+Michael Frederick
+N00725913
+
+Overall Design:
+This project is to implement a recursive descent parser for the C- Grammar. First
+the program will generate tokens to be used by the next parser. This is done by
+iterating through an input file line by line and outputing each C- token or
+identifier it recognizes. Tokens are identified according to the Lexical
+Conventions of C- in "Compiler Construction, Principles and Practice" by
+Kenneth C. Louden on pages 491-492. With the added ability to determine between
+float and integer numbers and allowing nested multiline comments. All the tokens
+will be placed into a temporary file. Then the program will attempt to parse the
+tokens according to the C- Grammar. If the input file is in the language of the
+C- grammar and makes semantic sense, the program will output to the terminal 'ACCEPT'.
+Otherwise, the program will output 'REJECT' to the terminal.
+
+How to Run:
+Issue make command in terminal.
+Invoke Program with Bash command:
+./p3 [filename]
+	with [filename] being the file to execute the lexical analysis.
+
+Files Created:
+[filename].temp
+	-while the program is running, program will delete file towards the end
+	 of execution
+
+Files Required:
+Parser.cpp
+Parser.h
+LexicalAnalyzer.cpp
+LexicalAnalyzer.h
+main.cpp
+Symbol.cpp
+Symbol.h
+SymbolTable.cpp
+SymbolTable.h
+-A file to parse
+
+Special Concerns:
+Program will output to terminal "Bad file" if it is unable to open the file and
+"No Input file given" if no file is passed in through command-line.

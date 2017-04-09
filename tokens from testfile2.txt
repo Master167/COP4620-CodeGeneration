@@ -1,0 +1,92 @@
+KEYWORD: int
+ID: gcd
+(
+KEYWORD: int
+ID: u
+,
+KEYWORD: int
+ID: v
+)
+{
+KEYWORD: if
+(
+ID: v
+==
+INT: 0
+)
+KEYWORD: return
+ID: u
+;
+KEYWORD: else
+KEYWORD: return
+ID: gcd
+(
+ID: v
+,
+ID: u
+-
+ID: u
+/
+ID: v
+*
+ID: v
+)
+;
+}
+KEYWORD: float
+ID: add
+(
+KEYWORD: float
+ID: x
+,
+KEYWORD: float
+ID: y
+)
+{
+ID: x
+=
+FLOAT: 1.01
+;
+ID: y
+=
+FLOAT: 1.01
+;
+KEYWORD: return
+ID: x
++
+ID: y
+;
+}
+KEYWORD: void
+ID: main
+(
+KEYWORD: void
+)
+{
+KEYWORD: int
+ID: x
+;
+KEYWORD: int
+ID: y
+;
+ID: x
+=
+INT: 48
+;
+ID: y
+=
+INT: 6
+;
+ID: add
+(
+ID: gcd
+(
+ID: x
+,
+ID: y
+)
+,
+INT: 2
+)
+;
+}

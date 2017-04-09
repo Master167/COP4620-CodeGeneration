@@ -1,0 +1,42 @@
+-----	Follow	-----
+program:	$
+declaration-list:	$
+declaration-list-prime:	$
+declaration:	INT FLOAT VOID $
+call-declaration:	INT FLOAT VOID $
+id-specifier:	INT FLOAT VOID $ ID ( NUM ; { IF WHILE RETURN }
+type-specifier:	ID
+params:	)
+param-list:	)
+param-list-prime:	)
+param:	, )
+array:	, )
+compound-stmt:	INT FLOAT VOID $ ID ( NUM ; { IF WHILE RETURN ELSE }
+local-declarations:	ID ( NUM ; { IF WHILE RETURN }
+local-declaration-prime:	ID ( NUM ; { IF WHILE RETURN }
+statement-list:	}
+statement-list-prime:	}
+statement:	ID ( NUM ; { IF WHILE RETURN ELSE }
+expression-stmt:	ID ( NUM ; { IF WHILE RETURN ELSE }
+selection-stmt:	ID ( NUM ; { IF WHILE RETURN ELSE }
+dangling-else:	ID ( NUM ; { IF WHILE RETURN ELSE }
+iteration-stmt:	ID ( NUM ; { IF WHILE RETURN ELSE }
+return-stmt:	ID ( NUM ; { IF WHILE RETURN ELSE }
+return-stmt-end:	ID ( NUM ; { IF WHILE RETURN ELSE }
+expression:	; ) ] ,
+variable:	; ) ] ,
+variable-factor:	; ) ] ,
+var-array:	= * / + - <= < > >= == != ; ) ] ,
+relop-expression:	; ) ] ,
+relop:	( ID NUM ; ) ] ,
+additive-expression:	; ) ] ,
+additive-expression-prime:	<= < > >= == != ; ) ] ,
+addop:	+ - <= < > >= == != ; ) ] ,
+term:	+ - <= < > >= == != ; ) ] ,
+term-prime:	<= < > >= == != + - ; ) ] ,
+factor: * / <= < > >= == != + - ; ) ] ,
+mulop:	( ID NUM
+var-call:	+ - * / <= < > >= == != ; ) ] ,
+args:	)
+arg-list:	)
+arg-list-prime:	)

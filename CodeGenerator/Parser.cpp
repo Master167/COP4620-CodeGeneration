@@ -773,6 +773,13 @@ std::string Parser::variableFactor(std::string leftType) {
         if (assignmentVariable->getType().compare(result) != 0) {
             this->throwFloatException();
         }
+        
+        this->output[this->currentOutputLine][0] = "assign";
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = assignmentVariable->getIdentifier();
+        this->currentOutputLine++;
+        
     }
     else if (this->searchArray(10, second, this->currentToken)) {
         result = this->termPrime(result);
@@ -979,6 +986,7 @@ std::string Parser::termPrime(std::string leftType) {
         this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
         this->currentOutputLine++;
         this->tempVariableCount++;
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
         
         result = this->termPrime(result);
     }

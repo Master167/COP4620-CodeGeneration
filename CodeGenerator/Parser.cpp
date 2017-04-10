@@ -21,6 +21,7 @@ bool Parser::parseFile(SymbolTable* symTable) {
     this->numberOfParamSeen = -1;
     this->seenReturnStmt = false;
     
+    //Added in project 4
     this->output = new (std::nothrow) std::string*[100];
     for (int i = 0; i < 100; i++) {
         this->output[i] = new (std::nothrow) std::string[4];
@@ -31,7 +32,7 @@ bool Parser::parseFile(SymbolTable* symTable) {
     if (this->getNextToken()) {
         try {
             this->program();
-            if (this->functionSymbol->getIdentifier().compare("ID: main") != 0) {
+            if (this->functionSymbol->getIdentifier().compare("main") != 0) {
                 // last function seen was not main
                 result = false;
             }
@@ -631,14 +632,49 @@ void Parser::danglingElse() {
 }
 
 void Parser::iterationStmt() {
+    int startOfWhile;
+    int backPatch;
     std::string result = "";
     std::string first[1] = { "while" };
     if (this->searchArray(1, first, this->currentToken)) {
         this->acceptToken("while", false);
         this->acceptToken("(", false);
+        // Capture start of while
+        startOfWhile = this->currentOutputLine;
         result = this->expression();
         this->acceptToken(")", false);
+        
+        // Make comparison
+        this->output[this->currentOutputLine][0] = "comp";
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
+        this->tempVariableCount++;
+        this->currentOutputLine++;
+        // Build conditional
+        this->output[this->currentOutputLine][0] = "b" + this->lastConditional;
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = INT_TO_STRING(this->currentOutputLine + 2);
+        this->currentOutputLine++;
+        
+        // Save where to place outside of while loop
+        backPatch = this->currentOutputLine;
+        this->output[this->currentOutputLine][0] = "b";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        this->currentOutputLine++;
+        
         this->statement();
+        // Place path to start of while loop
+        this->output[this->currentOutputLine][0] = "b";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = INT_TO_STRING(startOfWhile);
+        this->currentOutputLine++;
+        // Fix backPatch
+        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine);
     }
     else {
         this->throwException();
@@ -722,6 +758,7 @@ std::string Parser::expression() {
     else {
         this->throwException();
     }
+    this->endOfExpressionVariable = result;
     return result;
 }
 
@@ -844,36 +881,35 @@ std::string Parser::relopExpression(std::string leftType) {
     return result;
 }
 
-std::string Parser::relop() {
-    std::string result;
+void Parser::relop() {
     if (this->currentToken.compare("<=") == 0) {
         this->acceptToken("<=", false);
-        result = "le";
+        this->lastConditional = "le";
     }
     else if (this->currentToken.compare("<") == 0) {
         this->acceptToken("<", false);
-        result = "l";
+        this->lastConditional = "l";
     }
     else if (this->currentToken.compare(">") == 0) {
         this->acceptToken(">", false);
-        result = "g";
+        this->lastConditional = "g";
     }
     else if (this->currentToken.compare(">=") == 0) {
         this->acceptToken(">=", false);
-        result = "ge";
+        this->lastConditional = "ge";
     }
     else if (this->currentToken.compare("==") == 0) {
         this->acceptToken("==", false);
-        result = "e";
+        this->lastConditional = "e";
     }
     else if (this->currentToken.compare("!=") == 0) {
         this->acceptToken("!=", false);
-        result = "ne";
+        this->lastConditional = "ne";
     }
     else {
         this->throwException();
     }
-    return result;
+    return;
 }
 
 std::string Parser::additiveExpression(std::string leftType) {

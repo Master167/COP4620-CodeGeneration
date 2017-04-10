@@ -45,6 +45,8 @@ private:
     int currentOutputLine;
     int tempVariableCount;
     int lastNumberConstant;
+    std::string endOfExpressionVariable;
+    std::string lastConditional;
     std::string** output;
     
     // Class Methods
@@ -88,7 +90,7 @@ private:
     std::string variableFactor(std::string leftType);
     std::string varArray(std::string leftType);
     std::string relopExpression(std::string leftType);
-    std::string relop();
+    void relop();
     std::string additiveExpression(std::string leftType);
     std::string additiveExpressionPrime(std::string leftType);
     std::string addop();

@@ -726,7 +726,7 @@ std::string Parser::expression() {
 }
 
 std::string Parser::variable(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string first[12] = { "[", "=", "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->searchArray(12, first, this->currentToken)) {
@@ -757,7 +757,7 @@ std::string Parser::variable(std::string leftType) {
 
 std::string Parser::variableFactor(std::string leftType) {
     Symbol* assignmentVariable;
-    std::string result;
+    std::string result = leftType;
     std::string second[10] = { "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->currentToken.compare("=") == 0) {
@@ -797,7 +797,7 @@ std::string Parser::variableFactor(std::string leftType) {
 }
 
 std::string Parser::varArray(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string follow[15] = { "=", "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=", ";", ")", "]", "," };
     if (this->currentToken.compare("[") == 0) {
         // The lastSymbol seen is not an array
@@ -805,8 +805,9 @@ std::string Parser::varArray(std::string leftType) {
             this->throwFloatException();
         }
         this->acceptToken("[", false);
-        result = this->expression();
-        // Check if result is an INT
+        this->expression();
+//        result = this->expression();
+//        // Check if result is an INT
 //        if (result.compare("int") != 0) {
 //            this->throwFloatException();
 //        }
@@ -814,6 +815,7 @@ std::string Parser::varArray(std::string leftType) {
     }
     else if (this->searchArray(15, follow, this->currentToken)) {
         // Go to Empty
+        result = leftType;
     }
     else {
         this->throwException();
@@ -822,15 +824,15 @@ std::string Parser::varArray(std::string leftType) {
 }
 
 std::string Parser::relopExpression(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string first[6] = { "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->searchArray(6, first, this->currentToken)) {
         this->relop();
         result = this->additiveExpression(result);
-        if (leftType.compare(result) != 0) {
-            this->throwFloatException();
-        }
+//        if (leftType.compare(result) != 0) {
+//            this->throwFloatException();
+//        }
     }
     else if (this->searchArray(4, follow, this->currentToken)) {
         // Go to empty
@@ -875,7 +877,7 @@ std::string Parser::relop() {
 }
 
 std::string Parser::additiveExpression(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string second[1] = { "id" };
     std::string third[1] = { "num" };
     if (this->currentToken.compare("(") == 0) {
@@ -905,7 +907,7 @@ std::string Parser::additiveExpression(std::string leftType) {
 }
 
 std::string Parser::additiveExpressionPrime(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string op;
     std::string first[2] = { "+", "-" };
     std::string follow[10] = { "<=", "<", ">", ">=", "==", "!=", ";", ")", "]", "," };
@@ -980,17 +982,17 @@ std::string Parser::term() {
 }
 
 std::string Parser::termPrime(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string op;
     std::string first[2] = { "*", "/" };
     std::string follow[12] = { "<=", "<", ">", ">=", "==", "!=", "+", "-", ";", ")", "]", "," };
     if (this->searchArray(2, first, this->currentToken)) {
         op = this->mulop();
         result = this->factor();
-        if (leftType.compare(result) != 0) {
-            // Operands don't match
-            this->throwFloatException();
-        }
+//        if (leftType.compare(result) != 0) {
+//            // Operands don't match
+//            this->throwFloatException();
+//        }
         
         this->output[this->currentOutputLine][0] = op;
         this->output[this->currentOutputLine][1] = leftType;
@@ -1053,11 +1055,12 @@ std::string Parser::mulop() {
 }
 
 std::string Parser::varCall(std::string leftType) {
-    std::string result;
+    std::string result = leftType;
     std::string follow[14] = { "+", "-", "*", "/", "<=", "<", ">", ">=", "==", "!=", ";", ")", "]", "," };
     if (this->currentToken.compare("(") == 0) {
         this->acceptToken("(", false);
-        result = this->args();
+        //result = this->args();
+        this->args();
         this->acceptToken(")", false);
     }
     else if (this->currentToken.compare("[") == 0) {

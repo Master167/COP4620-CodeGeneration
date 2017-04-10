@@ -1,13 +1,13 @@
 void main (void) {
 	int x;
-	x = 1 * 2;
+	x = 1 + 2;
 }
 
 /*
 Expected Output:
 func	main	void	0
 alloc	4				x
-mult	1		2		t1
+add		1		2		t1
 assign	t1				x
 
 */

@@ -98,7 +98,8 @@ bool Parser::acceptToken(std::string token, bool addSymbol) {
                     }
                 }
                 else {
-                    resultSymbol = this->symTab->getSymbol(this->currentToken, this->currentScope);
+                    keyword = this->currentToken.erase(findResult, 4);
+                    resultSymbol = this->symTab->getSymbol(keyword, this->currentScope);
                 }
                 if (resultSymbol->getIdentifier().compare("$DEAD$") == 0) {
                     this->throwFloatException();
@@ -107,7 +108,6 @@ bool Parser::acceptToken(std::string token, bool addSymbol) {
                     this->lastType = resultSymbol->getType();
                 }
                 this->lastSymbol = resultSymbol;
-                
             }
             this->lastId = token;
             result = this->getNextToken();
@@ -696,7 +696,7 @@ void Parser::returnStmtEnd() {
 }
 
 std::string Parser::expression() {
-    std::string result = "";
+    std::string result;
     std::string first[1] = { "id" };
     std::string third[1] = { "num" };
     if (this->searchArray(1, first, this->currentToken)) {
@@ -726,7 +726,7 @@ std::string Parser::expression() {
 }
 
 std::string Parser::variable(std::string leftType) {
-    std::string result = this->lastType;
+    std::string result;
     std::string first[12] = { "[", "=", "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->searchArray(12, first, this->currentToken)) {
@@ -757,17 +757,16 @@ std::string Parser::variable(std::string leftType) {
 
 std::string Parser::variableFactor(std::string leftType) {
     Symbol* assignmentVariable;
-    std::string result = this->lastType;
+    std::string result;
     std::string second[10] = { "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->currentToken.compare("=") == 0) {
         assignmentVariable = this->lastSymbol;
         this->acceptToken("=", false);
-        this->lastType = "";
         result = this->expression();
         // A data type was seen but didn't make it all the way down
         if (result.compare("") == 0 && this->lastType.compare("") != 0) {
-            result = this->lastType;
+            //result = this->lastType;
         }
         // Check if expression result is the same as variable declared type
         if (assignmentVariable->getType().compare(result) != 0) {
@@ -823,7 +822,7 @@ std::string Parser::varArray(std::string leftType) {
 }
 
 std::string Parser::relopExpression(std::string leftType) {
-    std::string result = leftType;
+    std::string result;
     std::string first[6] = { "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->searchArray(6, first, this->currentToken)) {
@@ -876,7 +875,7 @@ std::string Parser::relop() {
 }
 
 std::string Parser::additiveExpression(std::string leftType) {
-    std::string result = leftType;
+    std::string result;
     std::string second[1] = { "id" };
     std::string third[1] = { "num" };
     if (this->currentToken.compare("(") == 0) {
@@ -888,12 +887,14 @@ std::string Parser::additiveExpression(std::string leftType) {
     }
     else if (this->searchArray(1, second, this->currentToken)) {
         this->acceptToken("id", false);
+        result = this->lastSymbol->getIdentifier();
         result = this->varCall(result);
         result = this->termPrime(result);
         result = this->additiveExpressionPrime(result);
     }
     else if (this->searchArray(1, third, this->currentToken)) {
         this->acceptToken("num", false);
+        result = INT_TO_STRING(this->lastNumberConstant);
         result = this->termPrime(result);
         result = this->additiveExpressionPrime(result);
     }
@@ -904,19 +905,30 @@ std::string Parser::additiveExpression(std::string leftType) {
 }
 
 std::string Parser::additiveExpressionPrime(std::string leftType) {
-    std::string result = leftType;
+    std::string result;
+    std::string op;
     std::string first[2] = { "+", "-" };
     std::string follow[10] = { "<=", "<", ">", ">=", "==", "!=", ";", ")", "]", "," };
     if (this->searchArray(2, first, this->currentToken)) {
-        this->addop();
+        op = this->addop();
         result = this->term();
 //        if (leftType.compare(result) != 0) {
 //            this->throwFloatException();
 //        }
+        
+        this->output[this->currentOutputLine][0] = op;
+        this->output[this->currentOutputLine][1] = leftType;
+        this->output[this->currentOutputLine][2] = result;
+        this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
+        this->currentOutputLine++;
+        this->tempVariableCount++;
+        
         result = this->additiveExpressionPrime(result);
     }
     else if (this->searchArray(10, follow, this->currentToken)) {
         // Go to empty
+        result = leftType;
     }
     else {
         this->throwException();
@@ -941,7 +953,7 @@ std::string Parser::addop() {
 }
 
 std::string Parser::term() {
-    std::string result = this->lastType;
+    std::string result;
     std::string second[1] = { "id" };
     std::string third[1] = { "num" };
     if (this->currentToken.compare("(") == 0) {
@@ -984,9 +996,9 @@ std::string Parser::termPrime(std::string leftType) {
         this->output[this->currentOutputLine][1] = leftType;
         this->output[this->currentOutputLine][2] = result;
         this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
         this->currentOutputLine++;
         this->tempVariableCount++;
-        result = "t" + INT_TO_STRING(this->tempVariableCount);
         
         result = this->termPrime(result);
     }
@@ -1001,7 +1013,7 @@ std::string Parser::termPrime(std::string leftType) {
 }
 
 std::string Parser::factor() {
-    std::string result = this->lastType;
+    std::string result;
     std::string second[1] = { "id" };
     std::string third[1] = { "num" };
     if (this->currentToken.compare("(") == 0) {
@@ -1062,7 +1074,7 @@ std::string Parser::varCall(std::string leftType) {
 
 std::string Parser::args() {
     Symbol* functionSymbol;
-    std::string result = this->lastType;
+    std::string result;
     std::string first[3] = { "id", "(", "num"};
     if (this->searchArray(3, first, this->currentToken)) {
         functionSymbol = this->symTab->getSymbol(this->lastSymbol->getIdentifier(), "");
@@ -1088,7 +1100,7 @@ std::string Parser::args() {
 }
 
 std::string Parser::argList() {
-    std::string result = this->lastType;
+    std::string result;
     std::string first[3] = { "id", "(", "num"};
     if (this->searchArray(3, first, this->currentToken)) {
         result = this->expression();
@@ -1102,7 +1114,7 @@ std::string Parser::argList() {
 }
 
 std::string Parser::argListPrime() {
-    std::string result = this->lastType;
+    std::string result;
     if (this->currentToken.compare(",") == 0) {
         this->acceptToken(",", false);
         result = this->expression();

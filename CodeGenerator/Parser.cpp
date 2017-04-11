@@ -599,12 +599,15 @@ void Parser::expressionStmt() {
 }
 
 void Parser::selectionStmt() {
+    int endOfTrue;
+    int endOfElse;
     std::string result = "";
     std::string first[1] = { "if" };
     if (this->searchArray(1, first, this->currentToken)) {
         this->acceptToken("if", false);
         this->acceptToken("(", false);
         result = this->expression();
+        
         this->acceptToken(")", false);
         this->statement();
         this->danglingElse();
@@ -644,10 +647,10 @@ void Parser::iterationStmt() {
         result = this->expression();
         this->acceptToken(")", false);
         
-        // Make comparison
+        // Make comparison -- THIS IS NOT CORRECT
         this->output[this->currentOutputLine][0] = "comp";
-        this->output[this->currentOutputLine][1] = result;
-        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][1] = result; // Needs to be left side of comparison
+        this->output[this->currentOutputLine][2] = ""; // Needs to be the right side of comparison
         this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
         result = "t" + INT_TO_STRING(this->tempVariableCount);
         this->tempVariableCount++;

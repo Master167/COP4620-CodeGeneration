@@ -1,11 +1,13 @@
 void main (void) {
 	int x;
 	int y;
-	y = 6;
-	x = 1;
-	while (x > y) {
-		x = x + 2;
+	if (x == 1) {
+		y = 1 + 2;
 	}
+	else {
+		x = 7 / 4;
+	}
+	x = y + 1;
 }
 
 /*
@@ -13,14 +15,16 @@ Expected Output:
 0	func	main	void	0
 1	alloc	4				x
 2	alloc	4				y
-3	assign	6				y
-4	assign	1				x
-5	comp	x		y		t0
-6	bg		t0				8
-7	b						11
-8	add		x		2		t1
-9	assign	t1				x
-10	b						5
-11
+3	comp	x		1		t0
+4	be 		t0				6
+5	b 						9
+6	add		1		2		t1
+7	assign	t1				y
+8	b 						11
+9	div		7		4		t2
+10	assign	t2				x
+11	add		y		1		t3
+12	assign	t3				x
+
 
 */

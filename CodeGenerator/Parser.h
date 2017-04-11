@@ -47,6 +47,8 @@ private:
     int lastNumberConstant;
     std::string endOfExpressionVariable;
     std::string lastConditional;
+    std::string leftSideConditional;
+    std::string rightSideConditional;
     std::string** output;
     
     // Class Methods

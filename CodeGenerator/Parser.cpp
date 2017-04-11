@@ -28,6 +28,8 @@ bool Parser::parseFile(SymbolTable* symTable) {
     }
     this->currentOutputLine = 0;
     this->tempVariableCount = 0;
+    this->leftSideConditional = "NOTASSIGNED";
+    this->rightSideConditional = "NOTASSIGNED";
     bool result = true;
     if (this->getNextToken()) {
         try {
@@ -599,8 +601,7 @@ void Parser::expressionStmt() {
 }
 
 void Parser::selectionStmt() {
-    int endOfTrue;
-    int endOfElse;
+    int backPatch;
     std::string result = "";
     std::string first[1] = { "if" };
     if (this->searchArray(1, first, this->currentToken)) {
@@ -608,9 +609,35 @@ void Parser::selectionStmt() {
         this->acceptToken("(", false);
         result = this->expression();
         
+        this->output[this->currentOutputLine][0] = "comp";
+        this->output[this->currentOutputLine][1] = this->leftSideConditional;
+        this->output[this->currentOutputLine][2] = this->rightSideConditional;
+        this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
+        this->tempVariableCount++;
+        this->currentOutputLine++;
+        this->output[this->currentOutputLine][0] = "b" + this->lastConditional;
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = INT_TO_STRING(this->currentOutputLine + 2);
+        this->currentOutputLine++;
+        this->output[this->currentOutputLine][0] = "b";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        backPatch = this->currentOutputLine;
+        this->currentOutputLine++;
+        
         this->acceptToken(")", false);
         this->statement();
+        
+        // Fix backPatch
+        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine); // Something is off on this one, I think.
+        this->output[this->currentOutputLine][0] = "b";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        backPatch = this->currentOutputLine++;
         this->danglingElse();
+        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine);
     }
     else {
         this->throwException();
@@ -868,8 +895,10 @@ std::string Parser::relopExpression(std::string leftType) {
     std::string first[6] = { "<=", "<", ">", ">=", "==", "!=" };
     std::string follow[4] = { ";", ")", "]", "," };
     if (this->searchArray(6, first, this->currentToken)) {
+        this->leftSideConditional = leftType;
         this->relop();
         result = this->additiveExpression(result);
+        this->rightSideConditional = result;
 //        if (leftType.compare(result) != 0) {
 //            this->throwFloatException();
 //        }

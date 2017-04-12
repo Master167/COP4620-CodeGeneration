@@ -148,6 +148,6 @@ bool Symbol::isEqual(Symbol* sym) {
 }
 
 void Symbol::throwFloatException() throw(float) {
-    throw (float)-1.0;
+    //throw (float)-1.0;
     return;
 }

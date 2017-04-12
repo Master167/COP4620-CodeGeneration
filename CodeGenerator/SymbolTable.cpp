@@ -168,7 +168,7 @@ bool SymbolTable::isPrime(int p) {
 }
 
 void SymbolTable::throwFloatException() throw(float) {
-    throw (float)-1.0;
+    //throw (float)-1.0;
     return;
 }
 

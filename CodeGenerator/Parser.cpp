@@ -684,10 +684,10 @@ void Parser::iterationStmt() {
         result = this->expression();
         this->acceptToken(")", false);
         
-        // Make comparison -- THIS IS NOT CORRECT
+        // Make comparison
         this->output[this->currentOutputLine][0] = "comp";
-        this->output[this->currentOutputLine][1] = result; // Needs to be left side of comparison
-        this->output[this->currentOutputLine][2] = ""; // Needs to be the right side of comparison
+        this->output[this->currentOutputLine][1] = this->leftSideConditional;
+        this->output[this->currentOutputLine][2] = this->rightSideConditional;
         this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
         result = "t" + INT_TO_STRING(this->tempVariableCount);
         this->tempVariableCount++;

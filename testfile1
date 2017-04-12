@@ -1,11 +1,17 @@
-int add(int x, int y) {
-	return x + y;
+int sub(int x, int y)
+{
+	int m[10];
+	int p;
+	p = m[p] + p * x;
+	return p;
 }
 
-void main (void) {
-	int q[5];
+void main(void) {
+	int x;
 	int w;
-	q[w] = 1;
-	w = 3;
-	add(q[1], w);
+	int v[15];
+	float q;
+	while ( x * w - w >= w + v[3])
+	{ w = w + x + w * v[4]; }
+	x = sub(x, q);
 }

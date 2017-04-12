@@ -241,7 +241,7 @@ bool Parser::searchArray(int arraySize, std::string *array, std::string key) {
 
 void Parser::printOutput() {
     for (int i = 0; i < this->currentOutputLine; i++) {
-        //std::cout << INT_TO_STRING(i) << "\t";
+        std::cout << INT_TO_STRING(i) << "\t";
         for (int j = 0; j < 4; j++) {
             std::cout << this->output[i][j] << "\t";
         }
@@ -868,8 +868,8 @@ std::string Parser::variable(std::string leftType) {
         this->output[this->currentOutputLine][2] = "";
         this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
         this->currentOutputLine++;
-        
-        result = this->args();
+        result = this->lastSymbol->getIdentifier();
+        this->args();
         this->acceptToken(")", false);
         result = this->termPrime(result);
         result = this->additiveExpressionPrime(result);
@@ -945,8 +945,8 @@ std::string Parser::varArray(std::string leftType) {
         
         // Calculate displacement
         this->output[this->currentOutputLine][0] = "mult";
-        this->output[this->currentOutputLine][1] = result;
-        this->output[this->currentOutputLine][2] = "4";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = result;
         this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
         result = "t" + INT_TO_STRING(this->tempVariableCount);
         this->tempVariableCount++;
@@ -1216,6 +1216,7 @@ std::string Parser::varCall(std::string leftType) {
         this->output[this->currentOutputLine][2] = "";
         this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
         this->currentOutputLine++;
+        result = this->lastSymbol->getIdentifier();
         
         this->args();
         this->acceptToken(")", false);
@@ -1224,7 +1225,7 @@ std::string Parser::varCall(std::string leftType) {
         result = this->varArray(result);
     }
     else if (this->searchArray(14, follow, this->currentToken)) {
-        this->varArray(result);
+        result = this->varArray(result);
     }
     else {
         this->throwException();

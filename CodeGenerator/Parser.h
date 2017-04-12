@@ -45,6 +45,7 @@ private:
     int currentOutputLine;
     int tempVariableCount;
     int lastNumberConstant;
+    std::string previousToken;
     std::string endOfExpressionVariable;
     std::string lastConditional;
     std::string leftSideConditional;

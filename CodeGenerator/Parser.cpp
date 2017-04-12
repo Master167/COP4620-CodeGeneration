@@ -38,22 +38,25 @@ bool Parser::parseFile(SymbolTable* symTable) {
                 // last function seen was not main
                 result = false;
             }
+            this->printOutput();
         }
         catch (int e) {
-            std::cout << "Int Exception thrown" << std::endl;
-            std::cout << "CurrentToken: " << this->currentToken << std::endl;
+            //std::cout << "Int Exception thrown" << std::endl;
+            //std::cout << "CurrentToken: " << this->currentToken << std::endl;
+            std::cout << "Unexpected: " << this->currentToken << std::endl;
+            std::cout << "After: " << this->previousToken << std::endl;
             result = false;
         }
         catch (float e) {
-            std::cout << "Float Exception thrown" << std::endl;
-            std::cout << "CurrentToken: " << this->currentToken << std::endl;
+            //std::cout << "Float Exception thrown" << std::endl;
+            //std::cout << "CurrentToken: " << this->currentToken << std::endl;
             result = false;
         }
         catch (std::string e) {
             std::cout << e << std::endl;
+            std::cout << "After: " << this->previousToken << std::endl;
             result = false;
         }
-        this->printOutput();
     }
     else {
         std::cout << "Unable to pull first token" << std::endl;
@@ -73,6 +76,7 @@ bool Parser::getNextToken() {
     }
     if (temp.length() > 0) {
         result = true;
+        this->previousToken = this->currentToken;
         this->currentToken = temp;
     }
     else {

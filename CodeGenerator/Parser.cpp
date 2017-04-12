@@ -241,6 +241,7 @@ bool Parser::searchArray(int arraySize, std::string *array, std::string key) {
 
 void Parser::printOutput() {
     for (int i = 0; i < this->currentOutputLine; i++) {
+        //std::cout << INT_TO_STRING(i) << "\t";
         for (int j = 0; j < 4; j++) {
             std::cout << this->output[i][j] << "\t";
         }
@@ -290,6 +291,7 @@ void Parser::declaration() {
 }
 
 void Parser::callDeclaration() {
+    int backPatch;
     std::string idFirst[2] = { ";", "[" };
     if (this->searchArray(2, idFirst, this->currentToken)) {
         this->idSpecifier();
@@ -303,14 +305,17 @@ void Parser::callDeclaration() {
         this->functionSymbol = this->lastSymbol;
         this->seenReturnStmt = false;
         this->currentScope = this->functionSymbol->getIdentifier();
-        this->acceptToken("(", false);
-        this->params();
-        this->acceptToken(")", false);
+        // Make function declaration
         this->output[this->currentOutputLine][0] = "func";
         this->output[this->currentOutputLine][1] = this->functionSymbol->getIdentifier();
         this->output[this->currentOutputLine][2] = this->functionSymbol->getType();
-        this->output[this->currentOutputLine][3] = INT_TO_STRING(this->functionSymbol->getNumberOfParams());
+        backPatch = this->currentOutputLine;
         this->currentOutputLine++;
+        this->acceptToken("(", false);
+        this->params();
+        this->acceptToken(")", false);
+        // Fix back patch
+        this->output[backPatch][3] = INT_TO_STRING(this->functionSymbol->getNumberOfParams());
         this->compountStmt();
         // The function is a non-void type and no returnStmt was seen
         if (this->functionSymbol->getType().compare("void") != 0 && !this->seenReturnStmt) {
@@ -388,6 +393,14 @@ void Parser::params() {
     if (this->searchArray(1, first, this->currentToken)) {
         this->acceptToken("int", false);
         this->acceptToken("id", true);
+        
+        //Make param
+        this->output[this->currentOutputLine][0] = "param";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
         this->lastSymbol->setType("int");
         this->numberOfParamSeen++;
         this->array();
@@ -396,6 +409,13 @@ void Parser::params() {
     else if (this->searchArray(1, second, this->currentToken)) {
         this->acceptToken("float", false);
         this->acceptToken("id", true);
+        // Make param
+        this->output[this->currentOutputLine][0] = "param";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
         this->lastSymbol->setType("float");
         this->numberOfParamSeen++;
         this->array();
@@ -416,12 +436,22 @@ void Parser::paramList() {
     std::string first[1] = { "id" };
     if (this->searchArray(1, first, this->currentToken)) {
         // Can't have a void param
-        this->throwFloatException();
+        //this->throwFloatException(); Commented out for now.
         // From Parser
-        //this->acceptToken("id", true);
-        //this->numberOfParamSeen++;
-        //this->array();
-        //this->paramListPrime();
+        this->acceptToken("id", true);
+        
+        // Make Param
+        this->output[this->currentOutputLine][0] = "param";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
+        this->lastSymbol->setType("void");
+        this->numberOfParamSeen++;
+        this->array();
+        this->paramListPrime();
+        
     }
     else if (this->currentToken.compare(")") == 0) {
         // Go to empty
@@ -452,6 +482,14 @@ void Parser::param() {
     if (this->searchArray(3, first, this->currentToken)) {
         this->typeSpecifier();
         this->acceptToken("id", true);
+        
+        // Make Param
+        this->output[this->currentOutputLine][0] = "param";
+        this->output[this->currentOutputLine][1] = "4";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
         this->lastSymbol->setType(this->lastType);
         this->numberOfParamSeen++;
         this->array();
@@ -736,6 +774,7 @@ void Parser::returnStmt() {
 }
 
 void Parser::returnStmtEnd() {
+    int backPatch;
     std::string result = "";
     std::string first[3] = { "id", "(", "num" };
     if (this->searchArray(3, first, this->currentToken)) {
@@ -761,6 +800,12 @@ void Parser::returnStmtEnd() {
             // Array in return expression
             this->throwFloatException();
         }
+        
+        this->output[this->currentOutputLine][0] = "ret";
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = "";
+        this->currentOutputLine++;
     }
     else if (this->currentToken.compare(";") == 0) {
         this->acceptToken(";", false);
@@ -816,6 +861,14 @@ std::string Parser::variable(std::string leftType) {
             this->throwFloatException();
         }
         this->acceptToken("(", false);
+        
+        // Make function call
+        this->output[this->currentOutputLine][0] = "call";
+        this->output[this->currentOutputLine][1] = INT_TO_STRING(this->lastSymbol->getNumberOfParams());
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
         result = this->args();
         this->acceptToken(")", false);
         result = this->termPrime(result);
@@ -1138,6 +1191,14 @@ std::string Parser::varCall(std::string leftType) {
     if (this->currentToken.compare("(") == 0) {
         this->acceptToken("(", false);
         //result = this->args();
+        
+        // Make function call
+        this->output[this->currentOutputLine][0] = "call";
+        this->output[this->currentOutputLine][1] = INT_TO_STRING(this->lastSymbol->getNumberOfParams());
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = this->lastSymbol->getIdentifier();
+        this->currentOutputLine++;
+        
         this->args();
         this->acceptToken(")", false);
     }
@@ -1185,6 +1246,14 @@ std::string Parser::argList() {
     std::string first[3] = { "id", "(", "num"};
     if (this->searchArray(3, first, this->currentToken)) {
         result = this->expression();
+        
+        // Make Argument
+        this->output[this->currentOutputLine][0] = "arg";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = result;
+        this->currentOutputLine++;
+        
         this->numberOfParamSeen++;
         result = this->argListPrime();
     }
@@ -1199,6 +1268,14 @@ std::string Parser::argListPrime() {
     if (this->currentToken.compare(",") == 0) {
         this->acceptToken(",", false);
         result = this->expression();
+        
+        // Make Argument
+        this->output[this->currentOutputLine][0] = "arg";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        this->output[this->currentOutputLine][3] = result;
+        this->currentOutputLine++;
+        
         this->numberOfParamSeen++;
         result = this->argListPrime();
     }

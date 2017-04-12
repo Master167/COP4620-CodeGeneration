@@ -17,14 +17,14 @@ Kenneth C. Louden on pages 491-492. With the added ability to determine between
 float and integer numbers and allowing nested multiline comments. All the tokens
 will be placed into a temporary file. Then the program will attempt to parse the
 tokens according to the C- Grammar. If the input file is in the language of the
-C- grammar and makes semantic sense, the program will output to the terminal 'ACCEPT'.
-Otherwise, the program will output 'REJECT' to the terminal.
+C- grammar and makes semantic sense, the program will output to the terminal
+generated code during the course of the parser checks.
 
 How to Run:
 Issue make command in terminal.
 Invoke Program with Bash command:
-./p3 [filename]
-	with [filename] being the file to execute the lexical analysis.
+./p4 [filename]
+	with [filename] being the file to execute the compiler.
 
 Files Created:
 [filename].temp

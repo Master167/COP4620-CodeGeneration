@@ -18,7 +18,7 @@ bool Parser::parseFile(SymbolTable* symTable) {
     this->currentScope = "";
     this->lastId = "";
     this->functionId = "";
-    this->numberOfParamSeen = -1;
+    this->numberOfParamSeen = 0;
     this->seenReturnStmt = false;
     
     //Added in project 4
@@ -609,6 +609,7 @@ void Parser::selectionStmt() {
         this->acceptToken("(", false);
         result = this->expression();
         
+        // Make Comparison
         this->output[this->currentOutputLine][0] = "comp";
         this->output[this->currentOutputLine][1] = this->leftSideConditional;
         this->output[this->currentOutputLine][2] = this->rightSideConditional;
@@ -616,11 +617,14 @@ void Parser::selectionStmt() {
         result = "t" + INT_TO_STRING(this->tempVariableCount);
         this->tempVariableCount++;
         this->currentOutputLine++;
+        
+        // Make jump to true part
         this->output[this->currentOutputLine][0] = "b" + this->lastConditional;
         this->output[this->currentOutputLine][1] = result;
         this->output[this->currentOutputLine][2] = "";
         this->output[this->currentOutputLine][3] = INT_TO_STRING(this->currentOutputLine + 2);
         this->currentOutputLine++;
+        // Make jump to false part
         this->output[this->currentOutputLine][0] = "b";
         this->output[this->currentOutputLine][1] = "";
         this->output[this->currentOutputLine][2] = "";
@@ -631,13 +635,8 @@ void Parser::selectionStmt() {
         this->statement();
         
         // Fix backPatch
-        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine); // Something is off on this one, I think.
-        this->output[this->currentOutputLine][0] = "b";
-        this->output[this->currentOutputLine][1] = "";
-        this->output[this->currentOutputLine][2] = "";
-        backPatch = this->currentOutputLine++;
+        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine + 1);
         this->danglingElse();
-        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine);
     }
     else {
         this->throwException();
@@ -646,11 +645,22 @@ void Parser::selectionStmt() {
 }
 
 void Parser::danglingElse() {
+    int backPatch;
     std::string first[1] = { "else" };
     std::string follow[9] = { "id", "(", "num", ";", "{", "if", "while", "return", "}" };
     if (this->searchArray(1, first, this->currentToken)) {
+        // Add jump over else
+        this->output[this->currentOutputLine][0] = "b";
+        this->output[this->currentOutputLine][1] = "";
+        this->output[this->currentOutputLine][2] = "";
+        backPatch = this->currentOutputLine;
+        this->currentOutputLine++;
+        
         this->acceptToken("else", false);
         this->statement();
+        
+        // Fix backPatch
+        this->output[backPatch][3] = INT_TO_STRING(this->currentOutputLine);
     }
     else if (this->searchArray(9, follow, this->currentToken)) {
         // Go to empty

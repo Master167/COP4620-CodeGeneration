@@ -3,16 +3,9 @@ int add(int x, int y) {
 }
 
 void main (void) {
-	int q;
+	int q[5];
 	int w;
-	q = 1;
+	q[w] = 1;
 	w = 3;
-	add(q, w);
+	add(q[1], w);
 }
-
-/*
-Expected Output:
-0
-
-
-*/

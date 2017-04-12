@@ -927,6 +927,7 @@ std::string Parser::variableFactor(std::string leftType) {
 }
 
 std::string Parser::varArray(std::string leftType) {
+    Symbol* arraySymbol;
     std::string result = leftType;
     std::string follow[15] = { "=", "*", "/", "+", "-", "<=", "<", ">", ">=", "==", "!=", ";", ")", "]", "," };
     if (this->currentToken.compare("[") == 0) {
@@ -934,13 +935,30 @@ std::string Parser::varArray(std::string leftType) {
         if (!this->lastSymbol->getIsArray()) {
             this->throwFloatException();
         }
+        arraySymbol = this->lastSymbol;
         this->acceptToken("[", false);
-        this->expression();
-//        result = this->expression();
+        result = this->expression();
 //        // Check if result is an INT
 //        if (result.compare("int") != 0) {
 //            this->throwFloatException();
 //        }
+        
+        // Calculate displacement
+        this->output[this->currentOutputLine][0] = "mult";
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = "4";
+        this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
+        this->tempVariableCount++;
+        this->currentOutputLine++;
+        this->output[this->currentOutputLine][0] = "disp";
+        this->output[this->currentOutputLine][1] = result;
+        this->output[this->currentOutputLine][2] = arraySymbol->getIdentifier();
+        this->output[this->currentOutputLine][3] = "t" + INT_TO_STRING(this->tempVariableCount);
+        result = "t" + INT_TO_STRING(this->tempVariableCount);
+        this->tempVariableCount++;
+        this->currentOutputLine++;
+        
         this->acceptToken("]", false);
     }
     else if (this->searchArray(15, follow, this->currentToken)) {
